@@ -6,28 +6,29 @@ const sweetRoutes = require("./routes/sweet.routes");
 
 const app = express();
 
-/* ✅ CORS FIX (IMPORTANT) */
+/* 🔥 FINAL CORS CONFIG (THIS FIXES YOUR ISSUE) */
 app.use(
   cors({
-    origin: "*", // allow frontend (Vite / Vercel / localhost)
+    origin: "*",
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: false,
   })
 );
 
-/* ✅ Body parser */
+/* 🔥 VERY IMPORTANT: handle preflight explicitly */
+app.options("*", cors());
+
 app.use(express.json());
 
-/* ✅ Routes */
+/* Routes */
 app.use("/api/auth", authRoutes);
 app.use("/api/sweets", sweetRoutes);
 
-/* ✅ Health check */
 app.get("/", (req, res) => {
   res.send("Sweet Shop API is running");
 });
 
-/* ✅ Protected test route */
 const { protect } = require("./middleware/auth.middleware");
 app.get("/api/protected", protect, (req, res) => {
   res.json({
